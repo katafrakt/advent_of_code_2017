@@ -1,4 +1,4 @@
-class Demo.HelloWorld : GLib.Object {
+class AdevntOfCode : GLib.Object {
     public static int main(string[] args) {
         var file = FileStream.open("input", "r");
         var input = file.read_line();
