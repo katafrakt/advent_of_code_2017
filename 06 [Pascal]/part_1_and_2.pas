@@ -78,11 +78,11 @@ begin
     end;
 end;
 
+procedure FindLoop();
 begin
     counter := 0;
-    InitRegisters();
+    used.Clear();
     current_signature := Signature();
-    used := TStringList.Create;
 
     while used.indexOf(current_signature) = -1 do
     begin
@@ -91,6 +91,15 @@ begin
         BalanceRegisters();
         current_signature := Signature();
     end;
+end;
 
-    writeln(counter);
+begin
+    InitRegisters();
+    used := TStringList.Create;
+
+    FindLoop();
+    writeln('Part 1: ', counter);
+
+    FindLoop();
+    writeln('Part 2: ', counter);
 end.
