@@ -1,5 +1,5 @@
 
-fn knot_hash(input: &str) -> String {
+fn knot_hash(input: &str) -> Vec<usize> {
     let mut length_list = input.as_bytes().to_vec();
     length_list.append(&mut vec![17, 31, 73, 47, 23]);
     let mut current_pos = 0;
@@ -31,15 +31,25 @@ fn knot_hash(input: &str) -> String {
     for _i in 0..16 {
         let tail = list.split_off(16);
         let xored = list.iter().fold(0, |acc, x| acc ^ x);
-        result.push(format!("{:02x}", xored));
+        result.push(xored);
         list = tail;
     };
     
-    return result.join("");
+    return result;
 }
 
 fn main() {
-    print!("{}\n", knot_hash(""));
-    print!("{}\n", knot_hash("AoC 2017"));
-    print!("{}\n", knot_hash("1,2,3"));
+    let base_str = "ffayrhll".to_string();
+    let mut ones_count = 0;
+
+    for i in 0..128 {
+        let str_to_hash = base_str.clone() + &format!("-{}", i);
+        let hashed = knot_hash(&str_to_hash);
+        let bin_hashes: Vec<String> = hashed.iter().map(|x| format!("{:b}", x)).collect();
+        let str_hashed: String = bin_hashes.join("");
+        let ones = str_hashed.chars().filter(|&x| x == '1').count();
+        ones_count += ones;
+    }
+
+    print!("{:?}\n", ones_count);
 }
