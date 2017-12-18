@@ -72,7 +72,7 @@ actor Main
         var lines: Array[String] = lines.create()
         try
             let auth = env.root as AmbientAuth
-            let file = File(FilePath(auth, "input"))
+            let file = File(FilePath(auth, "../input"))
             for line in file.lines() do
                 lines.push(line)
             end
