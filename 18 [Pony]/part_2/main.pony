@@ -29,6 +29,10 @@ class Register
     new create(name': String) =>
         name = name'
 
+    new create_with_value(name': String, value': I64) =>
+        name = name'
+        value = value'
+
     fun ref apply(instruction: Instruction, pos: I64, registers: Map[String, Register]): I64 =>
         var offset: I64 = 1
         let instruction_value: I64 = match instruction.value
@@ -69,9 +73,11 @@ class Program
     var current_instruction: I64
     var waiting: Bool
     
-    new create(instructions': Array[Instruction]) =>
+    new create(instructions': Array[Instruction], p_reg_value: I64) =>
         instructions = instructions'
         registers = registers.create()
+        let p_reg = Register.create_with_value("p", p_reg_value)
+        try registers.insert("p", p_reg) end
         queue = queue.create()
         current_instruction = 0
         waiting = false
@@ -129,8 +135,8 @@ actor Main
             instructions.push(instruction)
         end
 
-        var prog_0 = Program.create(instructions)
-        var prog_1 = Program.create(instructions)
+        var prog_0 = Program.create(instructions, 0)
+        var prog_1 = Program.create(instructions, 1)
 
         var sent_by_1: U64 = 0
 
