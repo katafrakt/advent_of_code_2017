@@ -13,13 +13,13 @@ class Instruction
         op = try parts(0) else "" end
 
         if op == "jgz" then
-            jump_check = try parts(1).i64() else try parts(1) else "dupa" end end
+            jump_check = try parts(1).i64() else try parts(1) else "" end end
         else
             register = try parts(1) else "" end
         end
 
         if parts.size() == 3 then
-            value = try parts(2).i64() else try parts(2) else "dupa2" end end
+            value = try parts(2).i64() else try parts(2) else "" end end
         end
 
 class Register
@@ -63,26 +63,21 @@ class Register
         register.value
 
 class Program
-    var other: (Program | None) = None
     var registers: Map[String, Register]
     var instructions: Array[Instruction]
     var queue: Array[I64]
     var current_instruction: I64
     var waiting: Bool
-    var _sent_values: I64
-
+    
     new create(instructions': Array[Instruction]) =>
         instructions = instructions'
-        _sent_values = 0
         registers = registers.create()
         queue = queue.create()
         current_instruction = 0
         waiting = false
 
-    fun ref set_other(other': Program) =>
-        other = other'
-
-    fun ref run_step() =>
+    fun ref run_step(): (I64 | None) =>
+        var val_to_send: (I64 | None) = None
         var instruction = Instruction.create("")            
         try instruction = instructions(current_instruction.usize()) end
 
@@ -92,13 +87,7 @@ class Program
         current_instruction = current_instruction + register.apply(instruction, current_instruction, registers)
 
         match instruction.op
-        | "snd" =>
-            match other
-            | let p: Program => 
-                p.enqueue(register.value)
-                _sent_values = _sent_values + 1
-            | None => None
-            end
+        | "snd" => val_to_send = register.value
         | "rcv" =>
             if queue.size() == 0 then
                 waiting = true
@@ -110,6 +99,8 @@ class Program
             end
         end
 
+        val_to_send
+
     fun terminated(): Bool =>
         (current_instruction < 0) or (current_instruction >= instructions.size().i64())
 
@@ -118,8 +109,6 @@ class Program
 
     fun ref enqueue(num: I64) =>
         queue.push(num)
-
-    fun sent_values(): I64 => _sent_values
 
 actor Main
     var instructions: Array[Instruction] = instructions.create()
@@ -142,17 +131,33 @@ actor Main
 
         var prog_0 = Program.create(instructions)
         var prog_1 = Program.create(instructions)
-        prog_0.set_other(prog_1)
-        prog_1.set_other(prog_0)
+
+        var sent_by_1: U64 = 0
 
         repeat
+            var val_to_send_to_1: (I64 | None) = None
+            var val_to_send_to_0: (I64 | None) = None
+
             if not prog_0.terminated() then
-                prog_0.run_step()
+                val_to_send_to_1 = prog_0.run_step()
             end 
 
             if not prog_1.terminated() then
-                prog_1.run_step()
-            end 
+                val_to_send_to_0 = prog_1.run_step()
+            end
+
+            match val_to_send_to_0
+            | let x: I64 => 
+                prog_0.enqueue(x)
+                sent_by_1 = sent_by_1 + 1
+            | None => None
+            end
+
+            match val_to_send_to_1
+            | let x: I64 => prog_1.enqueue(x)
+            | None => None
+            end
+
         until (prog_0.is_waiting() or prog_0.terminated()) and (prog_1.is_waiting() or prog_1.terminated()) end
 
-        env.out.print(prog_1.sent_values().string())
+        env.out.print(sent_by_1.string())
