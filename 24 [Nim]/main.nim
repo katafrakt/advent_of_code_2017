@@ -20,6 +20,7 @@ while f.readLine(line):
     parts.add(part)
 
 var partsStartingWithZero = filter(parts, proc(p: bridgePart): bool = p.low == 0)
+var longest: seq[bridgePart] = @[]
 
 proc reverse(part: bridgePart): bridgePart =
     result = (low: part.high, high: part.low)
@@ -35,6 +36,13 @@ proc buildBridge(bridge: seq[bridgePart], remaining: seq[bridgePart]): int =
     var last = bridge[bridge.len-1].high
     var matchingParts = filter(remaining, proc(x: bridgePart): bool = (x.low == last or x.high == last))
     if matchingParts.len == 0:
+        var lengthToBeat = longest.len
+        if bridge.len > longest.len:
+            longest = bridge
+        else:
+            if bridge.len == longest.len and calcStrength(bridge) > calcStrength(longest):
+                longest = bridge
+        
         return calcStrength(bridge)
     
     for part in matchingParts:
@@ -63,4 +71,4 @@ for beginning in partsStartingWithZero:
         maxStrength = result
 
 echo maxStrength
-        
+echo calcStrength(longest)
