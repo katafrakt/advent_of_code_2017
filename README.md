@@ -1,23 +1,27 @@
 ### Language breakdown (by lines)
 
 ```
-19.82%  Pony
-9.78%   Go
-9.07%   Ada
-7.38%   Rust
-6.95%   Clojure
-5.35%   Pascal
-5.18%   Erlang
-4.29%   C++
-4.19%   Fortran
-4.12%   Kotlin
-3.61%   Dart
-3.25%   OCaml
-3.18%   Vala
-3.06%   Groovy
-3.03%   Ruby
-2.17%   C
-2.11%   Racket
-2.10%   Haskell
-1.37%   Julia
+15.62%  Pony
+7.71%   Go
+7.58%   Elixir
+7.15%   Ada
+5.82%   Rust
+5.48%   Clojure
+5.25%   Java
+4.55%   Crystal
+4.22%   Pascal
+4.08%   Erlang
+3.79%   Nim
+3.38%   C++
+3.31%   Fortran
+3.25%   Kotlin
+2.85%   Dart
+2.56%   OCaml
+2.51%   Vala
+2.41%   Groovy
+2.39%   Ruby
+1.71%   C
+1.66%   Racket
+1.65%   Haskell
+1.08%   Julia
 ```
